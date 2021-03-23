@@ -42,10 +42,10 @@ class BirdingBackendApplicationTests {
 	@Test
 	public void shouldReturnStatusOkay() throws UnirestException {
 		Unirest.setTimeouts(0, 0);
-		HttpResponse<String> response
+		HttpResponse<JsonNode> response
 				= Unirest.get("https://api.ebird.org/v2/data/obs/KZ/recent")
 				.header("X-eBirdApiToken", apiKey)
-				.asString();
+				.asJson();
 
 		assertNotNull(response.getBody());
 		assertEquals(200, response.getStatus());
