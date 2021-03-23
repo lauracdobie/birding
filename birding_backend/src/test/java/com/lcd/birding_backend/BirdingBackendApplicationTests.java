@@ -20,7 +20,7 @@ class BirdingBackendApplicationTests {
 	@Autowired
 	BirdRepository birdRepository;
 
-	@Value("$(api.key)")
+	@Value("${E_BIRD_API_KEY}")
 	String apiKey;
 
 	@Test
