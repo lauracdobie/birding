@@ -1,5 +1,6 @@
 package com.lcd.birding_backend;
 
+import com.lcd.birding_backend.api.API;
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
 import com.mashape.unirest.http.HttpResponse;
@@ -19,6 +20,9 @@ class BirdingBackendApplicationTests {
 
 	@Autowired
 	BirdRepository birdRepository;
+
+	@Autowired
+	API api;
 
 	@Value("${E_BIRD_API_KEY}")
 	String apiKey;
@@ -49,6 +53,11 @@ class BirdingBackendApplicationTests {
 
 		assertNotNull(response.getBody());
 		assertEquals(200, response.getStatus());
+	}
+
+	@Test
+	public void canCallAPI() throws UnirestException {
+		api.getAllBirds();
 	}
 
 }
