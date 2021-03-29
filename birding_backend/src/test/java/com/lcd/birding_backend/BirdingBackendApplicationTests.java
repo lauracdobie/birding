@@ -56,7 +56,7 @@ class BirdingBackendApplicationTests {
 	}
 
 	@Test
-	public void canCallAPI() throws UnirestException {
+	public void canCallAPI() {
 		api.getAllBirds();
 	}
 

@@ -37,6 +37,13 @@
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.konghq</groupId>
+			<artifactId>unirest-objectmapper-jackson</artifactId>
+			<version>3.11.09</version>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
