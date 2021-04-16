@@ -38,19 +38,8 @@ public class API {
         String responseBody = response.getBody();
         BirdPayload[] birdsFromAPI = new BirdPayload[0];
         birdsFromAPI = objectMapper.readValue(responseBody, BirdPayload[].class);
-//        System.out.println(responseBody);
 
         return birdsFromAPI;
     };
 
-//    public HttpResponse<JsonNode> getAllBirds() throws UnirestException {
-//        Unirest.setTimeouts(0, 0);
-//        HttpResponse<JsonNode> response
-//                = Unirest.get("https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30")
-//                .header("X-eBirdApiToken", apiKey)
-//                .asJson();
-//
-//        System.out.println(response.getBody());
-//        return response;
-//    }
 }
