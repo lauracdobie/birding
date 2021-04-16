@@ -1,5 +1,6 @@
 package com.lcd.birding_backend;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lcd.birding_backend.api.API;
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
@@ -56,7 +57,7 @@ class BirdingBackendApplicationTests {
 	}
 
 	@Test
-	public void canCallAPI() {
+	public void canCallAPI() throws JsonProcessingException {
 		api.getAllBirds();
 	}
 

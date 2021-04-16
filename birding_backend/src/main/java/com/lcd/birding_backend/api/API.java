@@ -1,5 +1,6 @@
 package com.lcd.birding_backend.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lcd.birding_backend.models.BirdPayload;
@@ -19,7 +20,7 @@ public class API {
     @Value("${E_BIRD_API_KEY}")
     String apiKey;
 
-    public String getAllBirds() {
+    public BirdPayload[] getAllBirds() throws JsonProcessingException {
         String url = "https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30";
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -35,9 +36,11 @@ public class API {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
         String responseBody = response.getBody();
+        BirdPayload[] birdsFromAPI = new BirdPayload[0];
+        birdsFromAPI = objectMapper.readValue(responseBody, BirdPayload[].class);
+//        System.out.println(responseBody);
 
-        System.out.println(responseBody);
-        return responseBody;
+        return birdsFromAPI;
     };
 
 //    public HttpResponse<JsonNode> getAllBirds() throws UnirestException {
