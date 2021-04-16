@@ -57,7 +57,7 @@ class BirdingBackendApplicationTests {
 	}
 
 	@Test
-	public void canCallAPI() throws JsonProcessingException {
+	public void canCallAPI() throws JsonProcessingException, UnirestException {
 		api.getAllBirds();
 	}
 

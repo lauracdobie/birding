@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lcd.birding_backend.models.BirdPayload;
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,37 +21,20 @@ public class API {
     @Value("${E_BIRD_API_KEY}")
     String apiKey;
 
-    public BirdPayload[] getAllBirds() throws JsonProcessingException {
+    public BirdPayload[] getAllBirds() throws JsonProcessingException, UnirestException {
         String url = "https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30";
         ObjectMapper objectMapper = new ObjectMapper();
 
-        RestTemplate restTemplate = new RestTemplate();
-// Add the Jackson message converter
-        restTemplate.getMessageConverters()
-                .add(new MappingJackson2HttpMessageConverter());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-eBirdApiToken", apiKey);
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        Unirest.setTimeouts(0, 0);
+        HttpResponse<String> response
+                = Unirest.get("https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30")
+                .header("X-eBirdApiToken", apiKey)
+                .asString();
 
         String responseBody = response.getBody();
         BirdPayload[] birdsFromAPI = new BirdPayload[0];
         birdsFromAPI = objectMapper.readValue(responseBody, BirdPayload[].class);
-//        System.out.println(responseBody);
 
         return birdsFromAPI;
-    };
-
-//    public HttpResponse<JsonNode> getAllBirds() throws UnirestException {
-//        Unirest.setTimeouts(0, 0);
-//        HttpResponse<JsonNode> response
-//                = Unirest.get("https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30")
-//                .header("X-eBirdApiToken", apiKey)
-//                .asJson();
-//
-//        System.out.println(response.getBody());
-//        return response;
-//    }
-}
+        }
+    }
