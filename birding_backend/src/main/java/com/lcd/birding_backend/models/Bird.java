@@ -2,6 +2,7 @@ package com.lcd.birding_backend.models;
 
 public class Bird {
 
+    private String id;
     private String comName;
     private String sciName;
     private String locName;
@@ -21,6 +22,14 @@ public class Bird {
     }
 
     public Bird() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getComName() {

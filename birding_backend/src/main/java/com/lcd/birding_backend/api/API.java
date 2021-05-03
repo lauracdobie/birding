@@ -12,7 +12,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -20,7 +22,7 @@ public class API {
     @Value("${E_BIRD_API_KEY}")
     String apiKey;
 
-    public BirdPayload[] getAllBirds() throws JsonProcessingException {
+    public List<BirdPayload> getAllBirds() throws JsonProcessingException {
         String url = "https://api.ebird.org/v2/data/obs/GB-SCT/recent?back=30";
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,7 +41,10 @@ public class API {
         BirdPayload[] birdsFromAPI = new BirdPayload[0];
         birdsFromAPI = objectMapper.readValue(responseBody, BirdPayload[].class);
 
-        return birdsFromAPI;
+        List<BirdPayload> birdList = Arrays.asList(birdsFromAPI);
+
+
+        return birdList;
     };
 
 }
