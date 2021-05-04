@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -59,6 +61,24 @@ class BirdingBackendApplicationTests {
 	@Test
 	public void canCallAPI() throws JsonProcessingException {
 		api.getAllBirds();
+	}
+
+	@Test
+	public void canFindBirdByComName() {
+		List<Bird> foundBird = birdRepository.findByComName("Common Goldeneye");
+		assertEquals("60904b809d8f880773852d7a", foundBird.get(0).getId());
+	}
+
+	@Test
+	public void canFindBirdBySciName() {
+		List<Bird> foundBird = birdRepository.findBySciName("Anas crecca");
+		assertEquals("60904b809d8f880773852d7b", foundBird.get(0).getId());
+	}
+
+	@Test
+	public void canFindBirdByLocation() {
+		List<Bird> foundBird = birdRepository.findByLocName("Loch of Kinnordy");
+		assertEquals(7, foundBird.size());
 	}
 
 }
