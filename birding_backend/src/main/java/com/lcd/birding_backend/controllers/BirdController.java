@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -20,5 +21,13 @@ public class BirdController {
     public ResponseEntity<List<Bird>> getBirdsFromDB() {
         List<Bird> dbBirds = birdRepository.findAll();
         return new ResponseEntity<>(dbBirds, HttpStatus.OK);
+    }
+
+    @GetMapping (value = "api/birds/random")
+    public ResponseEntity<Bird> getRandomBird() {
+        List<Bird> dbBirds = birdRepository.findAll();
+        Collections.shuffle(dbBirds);
+        Bird randomBird = dbBirds.get(0);
+        return new ResponseEntity<>(randomBird, HttpStatus.OK);
     }
 }
