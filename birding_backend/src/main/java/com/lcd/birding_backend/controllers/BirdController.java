@@ -18,7 +18,11 @@ public class BirdController {
     BirdRepository birdRepository;
 
     @GetMapping (value = "/api/birds")
-    public ResponseEntity<List<Bird>> getBirdsFromDB() {
+    public ResponseEntity<List<Bird>> getBirdsFromDB(@RequestParam (name="com-name-contains", required = false) String comNamePart) {
+        if (comNamePart != null){
+            return new ResponseEntity<>(birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart), HttpStatus.OK);
+        }
+
         List<Bird> dbBirds = birdRepository.findAll();
         return new ResponseEntity<>(dbBirds, HttpStatus.OK);
     }

@@ -11,4 +11,5 @@ public interface BirdRepository extends MongoRepository<Bird, String> {
     List<Bird> findByComName(String name);
     List<Bird> findBySciName(String name);
     List<Bird> findByLocName(String name);
+    List<Bird> findByComNameLikeOrderByComNameAsc(String name);
 }
