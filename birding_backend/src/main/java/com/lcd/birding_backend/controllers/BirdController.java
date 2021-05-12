@@ -2,6 +2,7 @@ package com.lcd.birding_backend.controllers;
 
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,19 @@ public class BirdController {
     BirdRepository birdRepository;
 
     @GetMapping (value = "/api/birds")
-    public ResponseEntity<List<Bird>> getBirdsFromDB(@RequestParam (name="com-name-contains", required = false) String comNamePart) {
+    public ResponseEntity<List<Bird>> getBirdsFromDB(
+            @RequestParam (name="com-name-contains", required = false) String comNamePart,
+            @RequestParam (name="loc-name-contains", required = false) String locNamePart,
+            @RequestParam(name="loc-name", required = false) String locName
+    ) {
+        if (locNamePart != null){
+            return new ResponseEntity<>(birdRepository.findByLocNameLikeOrderByLocNameAsc(locNamePart), HttpStatus.OK);
+        }
+
+        if (locName != null) {
+            return new ResponseEntity<>(birdRepository.findByLocName(locName), HttpStatus.OK);
+        }
+
         if (comNamePart != null){
             return new ResponseEntity<>(birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart), HttpStatus.OK);
         }
@@ -27,16 +40,22 @@ public class BirdController {
         return new ResponseEntity<>(dbBirds, HttpStatus.OK);
     }
 
-//    @GetMapping (value = "api/birds/random")
-//    public ResponseEntity<List<Bird>> getRandomBird() {
-//        List<Bird> dbBirds = birdRepository.findAll();
-//        Collections.shuffle(dbBirds);
-//        List<Bird> foundBirds = new ArrayList<>();
-//
-//        Bird randomBird = dbBirds.get(0);
-//        foundBirds.add(randomBird);
-//        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
-//    }
+    @GetMapping (value = "api/birds/random-10")
+    public ResponseEntity<List<Bird>> getRandomTenBirds() {
+        List<Bird> dbBirds = birdRepository.findAll();
+        Collections.shuffle(dbBirds);
+        List<Bird> foundBirds = new ArrayList<>();
+
+        int i = 0;
+
+        while (foundBirds.size() < 10) {
+            Bird randomBird = dbBirds.get(i);
+            foundBirds.add(randomBird);
+            i ++;
+        }
+
+        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
+    }
 
     @GetMapping (value = "api/birds/random")
     public ResponseEntity<List<Bird>> getRandomBird() {
@@ -50,6 +69,11 @@ public class BirdController {
         foundBirds.add(randomBird);
         return new ResponseEntity<>(foundBirds, HttpStatus.OK);
     }
+
+//    @GetMapping (value = "api/birds/location-name/{locName}")
+//    public ResponseEntity<List<Bird>> getBirdsByLocName(@PathVariable String locName) {
+//        return new ResponseEntity<>(birdRepository.findByLocName(locName), HttpStatus.OK);
+//    }
 
 //    @GetMapping (value = "api/birds/random/{number}")
 //    public ResponseEntity<List<Bird>> getRandomBirds(@RequestParam String number) {
