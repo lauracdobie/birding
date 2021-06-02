@@ -2,6 +2,7 @@ package com.lcd.birding_backend.controllers;
 
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
+import com.lcd.birding_backend.services.LRUCache;
 import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,12 @@ public class BirdController {
     @Autowired
     BirdRepository birdRepository;
 
+    private Map<String, List<Bird>> birdNameNest;
+
+    public BirdController() {
+        this.birdNameNest = new LRUCache<>(6);
+    }
+
     @GetMapping (value = "/api/birds")
     public ResponseEntity<List<Bird>> getBirdsFromDB(
             @RequestParam (name="com-name-contains", required = false) String comNamePart,
@@ -33,6 +40,11 @@ public class BirdController {
         }
 
         if (comNamePart != null){
+            if (birdNameNest.containsKey(comNamePart)) {
+                return new ResponseEntity<>(birdNameNest.get(comNamePart), HttpStatus.OK);
+            }
+            birdNameNest.put(comNamePart, birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart));
+            System.out.println(birdNameNest);
             return new ResponseEntity<>(birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart), HttpStatus.OK);
         }
 
@@ -69,11 +81,6 @@ public class BirdController {
         foundBirds.add(randomBird);
         return new ResponseEntity<>(foundBirds, HttpStatus.OK);
     }
-
-//    @GetMapping (value = "api/birds/location-name/{locName}")
-//    public ResponseEntity<List<Bird>> getBirdsByLocName(@PathVariable String locName) {
-//        return new ResponseEntity<>(birdRepository.findByLocName(locName), HttpStatus.OK);
-//    }
 
 //    @GetMapping (value = "api/birds/random/{number}")
 //    public ResponseEntity<List<Bird>> getRandomBirds(@RequestParam String number) {
