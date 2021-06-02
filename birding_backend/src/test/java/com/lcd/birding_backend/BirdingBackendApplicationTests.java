@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lcd.birding_backend.api.API;
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
+import com.lcd.birding_backend.services.LRUCache;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -29,6 +32,8 @@ class BirdingBackendApplicationTests {
 
 	@Value("${E_BIRD_API_KEY}")
 	String apiKey;
+
+	Map<String, String> testCache = new LRUCache<String, String>(4);
 
 	@Test
 	void contextLoads() {
@@ -79,6 +84,19 @@ class BirdingBackendApplicationTests {
 	public void canFindBirdByLocation() {
 		List<Bird> foundBird = birdRepository.findByLocName("Loch of Kinnordy");
 		assertEquals(7, foundBird.size());
+	}
+
+	@Test
+	public void cacheOnlyRetainsFourItems () {
+		testCache.put("hello", "buongiorno");
+		testCache.put("goodbye", "arrivederci");
+		testCache.put("cat", "gatto");
+		testCache.put("dog", "cane");
+		System.out.println(testCache.toString());
+		testCache.put("ice cream", "gelato");
+		System.out.println(testCache.toString());
+		assertEquals(4, testCache.size());
+		assertFalse(testCache.containsKey("hello"));
 	}
 
 }
