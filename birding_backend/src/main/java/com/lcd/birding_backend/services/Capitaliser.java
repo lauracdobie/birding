@@ -13,8 +13,10 @@ public class Capitaliser {
 
         String capitalisedWords = capitalisedWordList.get(0);
         int i;
-        for (i=1; i<capitalisedWordList.size(); i++) {
-            capitalisedWords = capitalisedWords + " " + capitalisedWordList.get(i);
+        if (capitalisedWordList.size() > 1) {
+            for (i=1; i<capitalisedWordList.size(); i++) {
+                capitalisedWords = capitalisedWords + " " + capitalisedWordList.get(i);
+            }
         }
 
         String finalWords = capitalisedWords.trim();
