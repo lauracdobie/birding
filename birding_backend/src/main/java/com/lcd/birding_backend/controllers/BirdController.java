@@ -2,6 +2,7 @@ package com.lcd.birding_backend.controllers;
 
 import com.lcd.birding_backend.models.Bird;
 import com.lcd.birding_backend.repositories.BirdRepository;
+import com.lcd.birding_backend.services.Capitaliser;
 import com.lcd.birding_backend.services.LRUCache;
 import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class BirdController {
         this.birdNameNest = new LRUCache<>(6);
     }
 
+    Capitaliser capitaliser = new Capitaliser();
+
     @GetMapping (value = "/api/birds")
     public ResponseEntity<List<Bird>> getBirdsFromDB(
             @RequestParam (name="com-name-contains", required = false) String comNamePart,
@@ -32,20 +35,23 @@ public class BirdController {
             @RequestParam(name="loc-name", required = false) String locName
     ) {
         if (locNamePart != null){
-            return new ResponseEntity<>(birdRepository.findByLocNameLikeOrderByLocNameAsc(locNamePart), HttpStatus.OK);
+            String capitalisedLocation = capitaliser.capitaliseEachWord(locNamePart);
+            return new ResponseEntity<>(birdRepository.findByLocNameLikeOrderByLocNameAsc(capitalisedLocation), HttpStatus.OK);
         }
 
         if (locName != null) {
-            return new ResponseEntity<>(birdRepository.findByLocName(locName), HttpStatus.OK);
+            String capitalisedLocation = capitaliser.capitaliseEachWord(locName);
+            return new ResponseEntity<>(birdRepository.findByLocName(capitalisedLocation), HttpStatus.OK);
         }
 
         if (comNamePart != null){
-            if (birdNameNest.containsKey(comNamePart)) {
-                return new ResponseEntity<>(birdNameNest.get(comNamePart), HttpStatus.OK);
+            String capitalisedComName = capitaliser.capitaliseEachWord(comNamePart);
+            if (birdNameNest.containsKey(capitalisedComName)) {
+                return new ResponseEntity<>(birdNameNest.get(capitalisedComName), HttpStatus.OK);
             }
-            birdNameNest.put(comNamePart, birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart));
+            birdNameNest.put(capitalisedComName, birdRepository.findByComNameLikeOrderByComNameAsc(capitalisedComName));
             System.out.println(birdNameNest);
-            return new ResponseEntity<>(birdRepository.findByComNameLikeOrderByComNameAsc(comNamePart), HttpStatus.OK);
+            return new ResponseEntity<>(birdRepository.findByComNameLikeOrderByComNameAsc(capitalisedComName), HttpStatus.OK);
         }
 
         List<Bird> dbBirds = birdRepository.findAll();
@@ -82,21 +88,21 @@ public class BirdController {
         return new ResponseEntity<>(foundBirds, HttpStatus.OK);
     }
 
-//    @GetMapping (value = "api/birds/random/{number}")
-//    public ResponseEntity<List<Bird>> getRandomBirds(@RequestParam String number) {
-//        List<Bird> dbBirds = birdRepository.findAll();
-//        Collections.shuffle(dbBirds);
-//        List<Bird> foundBirds = new ArrayList<>();
-//        int convertedNumber = Integer.parseInt(number);
-//        int i = 0;
-//        while (i < convertedNumber - 1){
-//            Bird randomBird = dbBirds.get(i);
-//            foundBirds.add(randomBird);
-//            i ++;
-//        }
-//
-//        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
-//    }
+    @GetMapping (value = "api/birds/random/{number}")
+    public ResponseEntity<List<Bird>> getRandomBirds(@RequestParam String number) {
+        List<Bird> dbBirds = birdRepository.findAll();
+        Collections.shuffle(dbBirds);
+        List<Bird> foundBirds = new ArrayList<>();
+        int convertedNumber = Integer.parseInt(number);
+        int i = 0;
+        while (i < convertedNumber - 1){
+            Bird randomBird = dbBirds.get(i);
+            foundBirds.add(randomBird);
+            i ++;
+        }
+
+        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
+    }
 
 
 }
