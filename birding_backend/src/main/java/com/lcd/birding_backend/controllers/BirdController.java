@@ -76,33 +76,35 @@ public class BirdController {
     }
 
     @GetMapping (value = "api/birds/random")
-    public ResponseEntity<List<Bird>> getRandomBird() {
+    public ResponseEntity<?> getRandomBird(
+            @RequestParam (name = "number", required = false) String number
+    ) {
         List<Bird> dbBirds = birdRepository.findAll();
+        int convertedNumber = Integer.parseInt(number);
+        if(number != null && convertedNumber <= dbBirds.size()) {
+            Collections.shuffle(dbBirds);
+            List<Bird> foundBirds = new ArrayList<>();
+
+            int i = 0;
+            while (i < convertedNumber){
+                Bird randomBird = dbBirds.get(i);
+                foundBirds.add(randomBird);
+                i ++;
+            }
+
+            return new ResponseEntity<>(foundBirds, HttpStatus.OK);
+        }
+
+        if (number != null && convertedNumber > dbBirds.size()){
+            String errorMessage = "There aren't that many birds in the database!";
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        }
         int max = dbBirds.size() -1;
         Random random = new Random();
         int randomIndex = random.nextInt((max - 0) + 0);
         List<Bird> foundBirds = new ArrayList<>();
 
         Bird randomBird = dbBirds.get(randomIndex);
-        foundBirds.add(randomBird);
-        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
+        return new ResponseEntity<>(randomBird, HttpStatus.OK);
     }
-
-    @GetMapping (value = "api/birds/random/{number}")
-    public ResponseEntity<List<Bird>> getRandomBirds(@RequestParam String number) {
-        List<Bird> dbBirds = birdRepository.findAll();
-        Collections.shuffle(dbBirds);
-        List<Bird> foundBirds = new ArrayList<>();
-        int convertedNumber = Integer.parseInt(number);
-        int i = 0;
-        while (i < convertedNumber - 1){
-            Bird randomBird = dbBirds.get(i);
-            foundBirds.add(randomBird);
-            i ++;
-        }
-
-        return new ResponseEntity<>(foundBirds, HttpStatus.OK);
-    }
-
-
 }
