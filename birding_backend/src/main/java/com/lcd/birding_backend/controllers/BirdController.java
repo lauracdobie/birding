@@ -80,8 +80,13 @@ public class BirdController {
             @RequestParam (name = "number", required = false) String number
     ) {
         List<Bird> dbBirds = birdRepository.findAll();
-        int convertedNumber = Integer.parseInt(number);
-        if(number != null && convertedNumber <= dbBirds.size()) {
+        if(number != null) {
+            int convertedNumber = Integer.parseInt(number);
+            if (convertedNumber > dbBirds.size()){
+                String errorMessage = "There aren't that many birds in the database!";
+                return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+            }
+
             Collections.shuffle(dbBirds);
             List<Bird> foundBirds = new ArrayList<>();
 
@@ -95,14 +100,9 @@ public class BirdController {
             return new ResponseEntity<>(foundBirds, HttpStatus.OK);
         }
 
-        if (number != null && convertedNumber > dbBirds.size()){
-            String errorMessage = "There aren't that many birds in the database!";
-            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-        }
         int max = dbBirds.size() -1;
         Random random = new Random();
         int randomIndex = random.nextInt((max - 0) + 0);
-        List<Bird> foundBirds = new ArrayList<>();
 
         Bird randomBird = dbBirds.get(randomIndex);
         return new ResponseEntity<>(randomBird, HttpStatus.OK);
